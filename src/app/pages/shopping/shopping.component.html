@@ -1,0 +1,134 @@
+<div class="page-large-no-margin container">
+    <h1 id="cart-title">Shop All</h1>
+    <div id="shopping-container" class="d-flex flex-row flex-wrap">
+        <!-- rubric19 [begin] -->
+        <div id="shopping-menu" class="d-flex flex-column align-items-start flex-nowrap">
+            <div id="shopping-menu-div">
+              <div id="shopping-menu-div-div">
+                <section>
+                  <h2 class="d-none">List of categories and subcategories like a tree menu</h2>
+                  <app-treeview [list]="menuList" (treeviewChange)="treeviewChange($event)"></app-treeview>
+                </section>
+              </div>
+            </div>
+        </div>
+        <!-- rubric19 [end] -->
+        <div id="shopping-products" class="d-flex flex-column align-items-start flex-nowrap">  
+            <!-- rubric14 [begin] -->    
+            <div id="shopping-products-header">
+              <section class="w-100">
+                <h2 class="d-none">Controls for filtering and sorting products</h2>
+                <div id="shopping-products-header-div">
+                  <!-- rubric15, rubric16 [begin] --> 
+                  <div id="shopping-products-header-div-span">
+                    <div *ngIf="selectedCategory && selectedSubcategory">
+                      <span id="shopping-products-header-category" class="float-left w-auto mr-4">{{selectedCategory}} / {{selectedSubcategory}}</span>
+                      <span class="d-none d-sm-inline float-left pr-4">Items: {{numberOfItemsFiltered}} out of {{numberOfItemsInCategory}}</span>
+                      <span class="d-inline d-sm-none font-08-rem float-right">{{numberOfItemsFiltered}} / {{numberOfItemsInCategory}}</span>
+                    </div>
+                    <div *ngIf="!(selectedCategory && selectedSubcategory)">
+                        <span>&nbsp;</span>
+                    </div>
+                  <div class="clearfix"></div>
+                  </div>
+                  <!-- rubric15, rubric16 [end] --> 
+                  <!-- rubric17 [begin] -->
+                  <div class="float-left">
+                    <span class="d-none d-sm-inline pr-2">In stock only</span>
+                    <span class="d-inline d-sm-none pr-2">Stock</span>
+                    <app-togglebutton [checked]="selectedInStockOnly" (checkboxChange)="inStockChange($event)"></app-togglebutton>
+                  </div>
+                  <!-- rubric17 [end] -->
+                  <!-- rubric18 [begin] -->
+                  <div class="d-inline-flex flex-row align-items-baseline flex-nowrap float-right">
+                    <span class="d-none d-sm-inline p-2">Sort</span>
+                    <select [(ngModel)]="selectedSortBy" class="form-control" (change)="sortByChange($event)">
+                        <option>None</option>
+                        <option>Price</option>
+                        <option>Alphabetical</option>
+                        <option>Rating</option>
+                    </select>
+                  </div>
+                  <!-- rubric18 [end] -->
+                  <div class="clearfix"></div>
+                <div id="shopping-products-header-bottom">&nbsp;</div>
+                </div> 
+              </section>              
+            </div>  
+            <!-- rubric14 [end] -->    
+            <section class="w-100">
+              <h2 class="d-none">Products list filtered by category</h2>
+            <!-- rubric20 [begin] -->
+            <div id="shopping-products-list" class="d-flex flex-row flex-wrap">
+                <div *ngFor="let product of filteredProductList; let i = index">
+                  <article>
+                    <h2 class="d-none">Product</h2>
+                    <div class="shopping-product" itemscope itemtype="http://schema.org/Product">
+                        <div id="shopping-product-div">
+                            <!-- rubric31 -->
+                            <a [routerLink]="['/product']" [queryParams]="{ name:product.name }" itemprop="image">
+                                <!-- rubric23 -->
+                                <img id="shopping-product-div-img" [src]="product.imagelink" [alt]="product.name">
+                            </a>
+                        </div>
+                        <div id="shopping-product-desc">
+                            <h2 class="mb-0">
+                                <!-- rubric21, rubric32 -->
+                                <a [routerLink]="['/product']" [queryParams]="{ name:product.name }" class="mb-0" itemprop="identifier">
+                                    {{ product.name | titlecase }}
+                                </a>
+                                <meta itemprop="name" content="{{product.name}}" />
+                            </h2>
+                            <div class="w-100 mb-2">
+                              <div itemscope itemtype="http://schema.org/Rating">
+                                <p class="page-desc mb-0 float-left">Rate: {{product.rating}} / 5</p>
+                                <meta itemprop="ratingValue" content="{{product.rating}}" />
+                              </div>
+                              <div href="https://schema.org/ItemAvailability">
+                                <p class="page-desc mb-0 float-right">Stock: {{product.stock | number:'1.0-2'}}</p>
+                                <div *ngIf="product.stock > 0">
+                                    <meta itemprop="availability" content="InStock" />
+                                </div>
+                              </div>
+                            </div>
+                            <div id="shopping-product-desc-p-div">
+                              <p id="shopping-product-desc-p" itemprop="description">{{ product.description }}</p>
+                            </div>
+                            <div id="shopping-product-add">
+                                <div class="w-100 mb-0">
+                                    <div *ngIf="product.addToCartMessage!=='success' && product.addToCartMessage!=='error' && 
+                                              product.quantityInCart>0">
+                                      <p class="page-desc float-left mb-1">In your cart: {{product.quantityInCart | number:'1.0-2'}}</p>
+                                    </div>
+                                    <div *ngIf="product.addToCartMessage==='success'">
+                                      <p class="page-desc text-success float-left mb-1">Product added to cart.</p>
+                                    </div>
+                                    <div *ngIf="product.addToCartMessage==='error'">
+                                      <p class="page-desc text-danger float-left mb-1">Product not added to cart!</p>
+                                    </div>
+                                    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                                      <!-- rubric22 -->
+                                      <p class="font-weight-bold page-desc float-right mb-1">Price: {{product.price | currency:'USD':'symbol':'1.2-4'}}</p>
+                                      <meta itemprop="price" content="{{product.price}}" />
+                                      <meta itemprop="priceCurrency" content="USD" />
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row align-items-center float-right">
+                                    <div id="product-counter-group">
+                                        <app-counterinput [(counter)]="product.addToCartQuantity"></app-counterinput>
+                                    </div>
+                                    <!-- rubric24 -->
+                                    <button id="product-addtocart" type="button" class="btn btn-warning" 
+                                        (click)="addToCart(product.name, product.addToCartQuantity)">Add to cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </article>
+                </div>
+            </div>
+            <!-- rubric20 [end] -->
+          </section>
+        </div>
+    </div>
+</div>
